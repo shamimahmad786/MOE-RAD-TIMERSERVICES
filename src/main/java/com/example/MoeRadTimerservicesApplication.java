@@ -51,15 +51,21 @@ public class MoeRadTimerservicesApplication {
 	}
 	
 	Integer count=0;
-	 @Scheduled(fixedDelay = 6000000, initialDelay = 10000)
+	 @Scheduled(fixedDelay = 2000000000, initialDelay = 10000)
 	  public  void update() throws InterruptedException, ParseException {
 		  System.out.println("called timer service");
-		  
+//		  Integer groundForTrans=0;
 //		  if(count==0) {
 //		  ++count;
 		  createNewRecord();
 		  
-          String query8Update="update transfer.transfer_teacher_check set unfrez_flag='P' where unfrez_flag='Y'";
+//          String query8Update="update transfer.transfer_teacher_check set unfrez_flag='P' where unfrez_flag='Y'";
+		  String query8Update="update transfer.transfer_teacher_check ttc \n"
+			  		+ "set unfrez_flag = 'P'\n"
+			  		+ "from public.teacher_profile tp \n"
+			  		+ "where  ttc.unfrez_flag ='Y'\n"
+			  		+ "and tp.teacher_id = ttc.teacher_id \n"
+			  		+ "and tp.verify_flag ='SA'";
           nativeRepository.updateQueries(query8Update);
           
           System.out.println("update ");
@@ -68,7 +74,7 @@ public class MoeRadTimerservicesApplication {
 		  		+ "set last_promotion_position_type = tp.last_promotion_position_type ,\n"
 		  		+ "     teaching_nonteaching = tp.teaching_nonteaching ,\n"
 		  		+ "     teacher_disability_yn = tp.teacher_disability_yn ,\n"
-		  		+ "     teacher_age = public.calculate_age_with_reference(tp.teacher_dob::date, '2020-07-01')\n"
+		  		+ "     teacher_age = public.calculate_age_with_reference(tp.teacher_dob::date, '2023-07-01')\n"
 		  		+ "from public.teacher_profile tp\n"
 		  		+ "where tp.teacher_id  = ttc.teacher_id and ttc.unfrez_flag='P' ";
 		  
@@ -151,9 +157,11 @@ nativeRepository.deleteQueries(deleteQuery);
 		
 		  public  void update1() throws InterruptedException, ParseException {
 			  System.out.println("called Schedular");
+			int  groundForTrans=0;
 //			  ++count;
 //			  if(count==1) {
 			  String query="select tp.* from public.teacher_profile tp, transfer.transfer_teacher_check ttc where  tp.teacher_id=ttc.teacher_id and unfrez_flag='P'";
+			  
 			  
 			  QueryResult qs=nativeRepository.executeQueries(query);
 			  
@@ -163,7 +171,7 @@ nativeRepository.deleteQueries(deleteQuery);
 			  LinkedList<Transfer> transfers = new LinkedList<>();
 			  
 				String QUERYstation = " select *, DATE_PART('day', work_end_date::timestamp - work_start_date::timestamp) as no_of_days from (\r\n"
-						+ "				 	select ksm.station_code , work_start_date , coalesce(work_end_date,'2023-06-30') as work_end_date, \r\n"
+						+ "				 	select ksm.station_code , work_start_date , coalesce(work_end_date,'2023-06-30') as work_end_date, twe.ground_for_transfer ,\r\n"
 						+ "				 	teacher_id   \r\n"
 						+ "				 	from 	public.teacher_work_experience twe , kv.kv_school_master ksm \r\n"
 						+ "				 	where teacher_id = '" + qs.getRowValue().get(i).get("teacher_id") + "'"
@@ -202,7 +210,16 @@ nativeRepository.deleteQueries(deleteQuery);
 
 //				int returnStay = calculateReturnStay(highestThreeRows);
 				System.out.println("transfers--->"+transfers.size());
-				int returnStay = calculateReturnStay(transfers);
+				int returnStay =0;
+				if(qr.getRowValue().size()>2) {
+					groundForTrans=	Integer.parseInt(String.valueOf(qr.getRowValue().get(1).get("ground_for_transfer")));
+					if(groundForTrans==1 || groundForTrans==2 ||groundForTrans==3 || groundForTrans==4 || groundForTrans==5 || groundForTrans==6 || groundForTrans==13 || groundForTrans==14 || groundForTrans==15 || groundForTrans==16 || groundForTrans==17 || groundForTrans==19) {
+				returnStay = calculateReturnStay(transfers);
+					}
+				}
+				
+				
+//				int returnStay = calculateReturnStay(transfers);
 				
 				if(returnStay>0) {
 					++returnStayCount;
