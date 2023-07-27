@@ -109,7 +109,7 @@ public class MoeRadTimerservicesApplication {
 		  System.out.println("called update2");
          
           
-          update1();
+//          update1();
           
           
           
@@ -157,7 +157,7 @@ nativeRepository.deleteQueries(deleteQuery);
 		
 		  public  void update1() throws InterruptedException, ParseException {
 			  System.out.println("called Schedular");
-			int  groundForTrans=0;
+			String  groundForTrans="0";
 //			  ++count;
 //			  if(count==1) {
 			  String query="select tp.* from public.teacher_profile tp, transfer.transfer_teacher_check ttc where  tp.teacher_id=ttc.teacher_id and unfrez_flag='P'";
@@ -212,8 +212,8 @@ nativeRepository.deleteQueries(deleteQuery);
 				System.out.println("transfers--->"+transfers.size());
 				int returnStay =0;
 				if(qr.getRowValue().size()>2) {
-					groundForTrans=	Integer.parseInt(String.valueOf(qr.getRowValue().get(1).get("ground_for_transfer")));
-					if(groundForTrans==1 || groundForTrans==2 ||groundForTrans==3 || groundForTrans==4 || groundForTrans==5 || groundForTrans==6 || groundForTrans==13 || groundForTrans==14 || groundForTrans==15 || groundForTrans==16 || groundForTrans==17 || groundForTrans==19) {
+					groundForTrans=	String.valueOf(qr.getRowValue().get(1).get("ground_for_transfer"));
+					if(groundForTrans.equalsIgnoreCase("1") || groundForTrans.equalsIgnoreCase("2") ||groundForTrans.equalsIgnoreCase("3") || groundForTrans.equalsIgnoreCase("4") || groundForTrans.equalsIgnoreCase("5") || groundForTrans.equalsIgnoreCase("6") || groundForTrans.equalsIgnoreCase("13") || groundForTrans.equalsIgnoreCase("14") || groundForTrans.equalsIgnoreCase("15") || groundForTrans.equalsIgnoreCase("16") || groundForTrans.equalsIgnoreCase("1") || groundForTrans.equalsIgnoreCase("19")) {
 				returnStay = calculateReturnStay(transfers);
 					}
 				}
