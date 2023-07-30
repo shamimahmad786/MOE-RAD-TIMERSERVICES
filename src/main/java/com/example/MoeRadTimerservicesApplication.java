@@ -51,7 +51,7 @@ public class MoeRadTimerservicesApplication {
 	}
 	
 	Integer count=0;
-	 @Scheduled(fixedDelay = 2000000000, initialDelay = 10000)
+	 @Scheduled(fixedDelay = 500000, initialDelay = 10000)
 	  public  void update() throws InterruptedException, ParseException {
 		  System.out.println("called timer service");
 //		  Integer groundForTrans=0;
